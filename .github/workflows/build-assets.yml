@@ -22,10 +22,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
       - name: Install build tools
         working-directory: tools
         run: npm install --no-audit --no-fund
@@ -40,6 +40,13 @@ jobs:
             echo "Nothing to commit"
           else
             git commit -m "Build generated assets"
-            git pull --rebase origin main
-            git push origin HEAD:main
+            # Retry in case another commit lands on main between the pull and the push.
+            for attempt in 1 2 3 4 5; do
+              if git pull --rebase origin main && git push origin HEAD:main; then
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "Could not push the generated files" >&2
+            exit 1
           fi
