@@ -1,0 +1,11 @@
+{
+  "name": "rare-and-me-vn-tools",
+  "private": true,
+  "type": "module",
+  "description": "Generates the icon module, the embedded font stylesheet and the PNG app icons.",
+  "dependencies": {
+    "@fontsource-variable/plus-jakarta-sans": "5.3.0",
+    "@phosphor-icons/core": "2.1.1",
+    "sharp": "0.35.5"
+  }
+}
