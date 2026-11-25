@@ -1,0 +1,45 @@
+name: Build generated assets
+
+# Generates js/icons.js, css/fonts.css and the PNG app icons, then commits them to main.
+# Runs when the build script, its dependencies or the icon artwork change. It can also be run by hand.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/**'
+      - 'icons/*.svg'
+      - '.github/workflows/build-assets.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-assets
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install build tools
+        working-directory: tools
+        run: npm install --no-audit --no-fund
+      - name: Generate assets
+        run: node tools/build-assets.mjs .
+      - name: Commit generated files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add css/fonts.css js/icons.js icons/*.png
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+          else
+            git commit -m "Build generated assets"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
