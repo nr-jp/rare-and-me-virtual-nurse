@@ -10,7 +10,7 @@ export const PHASES = [
   { id: 'p1', k: 'Phase 1', title: 'Getting set up', tone: 'sky', steps: [
     { id: 'unlock', type: 'setup', icon: 'barcode', title: 'Unlock Ezmekly support', meta: 'Batch code verified', about: 'You confirmed your medication with the batch code on your pack. That switched on guidance made for Ezmekly.' },
     { id: 'join', type: 'setup', icon: 'phone-call', title: 'Join the support program', meta: 'Registered by phone', about: 'One call to the nurse line set you up. Your nurse team and this app now share the same record.' },
-    { id: 'meet', type: 'setup', icon: 'sun', title: 'Meet Sol and Sofia', meta: 'Your virtual nurse and your nurse', about: 'Sol is here day and night for questions. Sofia is your nurse, by phone, for anything you would rather talk through.' },
+    { id: 'meet', type: 'setup', icon: 'sun', title: 'Meet Sol and Sofia', meta: 'Your assistant and your nurse', about: 'Sol is here day and night for questions. Sofia is your nurse, by phone, for anything you would rather talk through.' },
     { id: 'call1', type: 'call', icon: 'phone', title: 'Welcome call with Sofia', about: 'Sofia calls to say hello, hear how the first days have gone and answer your questions. About 15 minutes.' },
   ] },
   { id: 'p2', k: 'Phase 2', title: 'Your first cycle', tone: 'sun', steps: [
@@ -107,6 +107,10 @@ export const ARTICLES = [
     'Skin changes are among the side effects people on Ezmekly mention most. A rash can be bumpy or look like acne.',
     'Tell your doctor if you get a rash. They can suggest ways to look after your skin, and they may want to see it.',
     'Logging when a rash started and how it changes gives your care team a clearer picture than memory alone.'] },
+  { id: 'nausea', tag: 'Daily life', icon: 'fork-knife', tone: 'sun', title: 'Eating when you feel sick', date: '18 Nov 2026', body: [
+    'Feeling sick is among the side effects people on Ezmekly mention most. Small changes to how you eat and drink can make it easier to get through.',
+    'Try smaller meals more often, and stop when you feel full. Sip water slowly through the day instead of drinking a lot at once.',
+    'Tell your doctor, pharmacist or nurse if you feel sick. If you can’t keep food or fluids down, contact them straight away.'] },
   { id: 'eye', tag: 'Appointments', icon: 'eye', tone: 'sun', title: 'Getting ready for an eye check', date: '21 Oct 2026', body: [
     'Eye checks are a routine part of treatment with Ezmekly. An eye specialist looks at your vision before you start and regularly while you are on treatment.',
     'Before the appointment, note anything you have noticed: blurry vision, changes in what you can see, or eye discomfort. Bring your glasses or contact lens details if you have them.',
@@ -118,7 +122,7 @@ export const ARTICLES = [
 ];
 
 export const ABOUT = [
-  ['What is the support program?', 'The support program gives you guidance about your treatment with Ezmekly, phone support from a nurse, and Sol, a virtual nurse in the app. It’s free to use.'],
+  ['What is the support program?', 'The support program gives you guidance about your treatment with Ezmekly, phone support from a nurse, and Sol, an AI assistant in the app. It’s free to use.'],
   ['What can a nurse help me with?', 'Taking Ezmekly, side effects you notice, and practical questions. Nurses don’t diagnose or change your dose. Your doctor does that.'],
   ['What can Sol help me with?', 'Sol is an AI assistant. It answers questions using approved information about Ezmekly and what you have logged in the app, guides you through your journey, and points you to a nurse or your doctor when you need a person. It doesn’t give medical advice.'],
   ['Who runs this program?', 'The program is provided by the company that makes Ezmekly. Nurse support is run by a specialist nurse team on their behalf. Nurses are there to support you, not to promote any medicine.'],

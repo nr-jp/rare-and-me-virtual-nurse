@@ -1,7 +1,7 @@
 {
-  "name": "Rare & Me (virtual nurse prototype)",
+  "name": "Rare & Me (assistant prototype)",
   "short_name": "Rare & Me",
-  "description": "Concept prototype of the virtual nurse in Rare & Me. Illustrative content, not for patient use.",
+  "description": "Concept prototype of Sol, the assistant in Rare & Me. Illustrative content, not for patient use.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

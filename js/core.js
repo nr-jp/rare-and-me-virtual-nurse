@@ -68,7 +68,7 @@ export function lineStatus() {
 
 /* ---------- Store ---------- */
 const KEY = 'ram-vn-proto';
-const VERSION = 4;
+const VERSION = 5;
 export function fresh() {
   const t0 = sod(new Date());
   const doses = {};
@@ -77,7 +77,7 @@ export function fresh() {
   return {
     v: VERSION, stage: 'available', name: 'Elena', dayOffset: 0, treatmentStart: iso(addDays(t0, -4)), enrolDay: null, activatingSince: null,
     dismissed: {}, doses, symptoms: [{ date: iso(addDays(t0, -2)), items: [{ id: 'fatigue', sev: 1 }] }], steps: {}, justDone: null,
-    call: { dayIso: null, time: '10:30', notes: '', moved: false, done: false }, chat: [], metSol: false, checkin: null,
+    call: { dayIso: null, time: '10:30', notes: '', moved: false, done: false }, chats: [], chatId: null, solAck: false, journeyStyle: 'path', metSol: false, checkin: null,
     reminders: { on: false, am: '08:00', pm: '20:00' }, presenter: false, installSeen: false, tipSeen: false, notified: {},
   };
 }
@@ -240,6 +240,7 @@ export function notify({ title, body, onTap, ttl = 7000 }) {
 
 /* Confetti */
 export function celebrate(power = 1) {
+  if (store.get().journeyStyle !== 'path') return; // the calmer journey styles drop the confetti
   const host = $('l-top'); const c = h('canvas', { class: 'confetti' }); host.append(c);
   const r = host.getBoundingClientRect(); const dpr = Math.min(2, window.devicePixelRatio || 1);
   c.width = r.width * dpr; c.height = r.height * dpr; const ctx = c.getContext('2d'); ctx.scale(dpr, dpr);
@@ -262,7 +263,7 @@ export function celebrate(power = 1) {
   })();
 }
 
-/* Sol, the virtual nurse avatar: a living sun, evolved from the V1 assistant mark */
+/* Sol, the assistant's avatar: a living sun, evolved from the V1 assistant mark */
 let uid = 0;
 export function sol(size = 40, state = 'idle', cls = '') {
   const id = 'sg' + (++uid); let rays = '';

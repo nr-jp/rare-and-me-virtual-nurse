@@ -8,8 +8,8 @@ import {
 /* ---------- Logic ---------- */
 export function callDate() { const s = store.get(); return s.call.dayIso ? fromIso(s.call.dayIso) : null; }
 export function typeLabel(st) {
-  if (st.type === 'lesson') return 'Lesson · ' + st.mins + ' min';
-  if (st.type === 'action') return 'Quick task · ' + st.mins + ' min';
+  if (st.type === 'lesson') return 'Lesson' + (st.mins ? ' · ' + st.mins + ' min' : '');
+  if (st.type === 'action') return 'Quick task' + (st.mins ? ' · ' + st.mins + ' min' : '');
   if (st.type === 'checkin') return 'Check-in · ' + (st.mins || 2) + ' min';
   if (st.type === 'call') return 'Call with your nurse';
   if (st.type === 'milestone') return 'Milestone';
@@ -79,7 +79,7 @@ export function cycleRing(size, { onSun = false, small = false, animate = true }
     const a0 = -90 + i * seg + gap / 2; const a1 = -90 + (i + 1) * seg - gap / 2;
     const [x0, y0] = pt(a0); const [x1, y1] = pt(a1); const n = i + 1; let col; let w = sw;
     if (n === ci.day) { col = '#2a2a2a'; w = sw + 3.5; }
-    else if (n <= 21) col = n < ci.day ? (onSun ? '#e09a00' : '#f4b62a') : (onSun ? 'rgba(138,101,0,.2)' : '#ffe6a0');
+    else if (n <= 21) col = n < ci.day ? (onSun ? '#e09a00' : '#f4b62a') : (onSun ? '#f4c26b' : '#ffd98a'); // days still to come stay orange, only lighter
     else col = n < ci.day ? '#6f9bd0' : (onSun ? '#9fc0e6' : '#cfe0f3');
     d += '<path class="seg" d="M' + x0.toFixed(2) + ' ' + y0.toFixed(2) + ' A' + r + ' ' + r + ' 0 0 1 ' + x1.toFixed(2) + ' ' + y1.toFixed(2) + '" stroke="' + col + '" stroke-width="' + w + '"' + (animate ? ' style="animation-delay:' + (i * 18) + 'ms"' : '') + '/>';
   }
@@ -89,53 +89,64 @@ export function cycleRing(size, { onSun = false, small = false, animate = true }
   return wrap;
 }
 
-/* ---------- Home card ---------- */
-export function homeJourneyCard() {
-  const j = computeJourney(); const ci = j.ci; const cur = j.current;
-  const pct = Math.round((j.done / j.total) * 12);
-  let next;
+/* ---------- The cycle card. One card, shown the same on Home and on My Care. ---------- */
+export function cycleCard() {
+  const j = computeJourney(); const ci = j.ci; const s = store.get(); const cd = callDate(); const cur = j.current;
+  const callOpen = cd && !s.call.done && cd >= sod(now()); const left = ci.on ? 21 - ci.day : 0;
+  let next = null;
   if (cur) {
     next = h('button', { class: 'jnext', onClick: (e) => { e.stopPropagation(); startStep(cur); } },
       h('span', { class: 'nico' }, ic(cur.icon, 22)),
       h('span', { style: 'min-width:0;flex:1' }, h('div', { class: 't1' }, cur.title), h('div', { class: 't2' }, 'Next on your journey · ' + typeLabel(cur).split(' · ')[1])),
       h('span', { class: 'go' }, ic('arrow-right', 18)));
   } else if (j.nextTimed) {
-    next = h('button', { class: 'jnext', style: 'background:#fff;color:var(--text);border:1px solid var(--border)', onClick: (e) => { e.stopPropagation(); actions.goTab('care', true); } },
-      h('span', { class: 'nico', style: 'background:var(--surface-2);color:var(--text-2)' }, ic('clock', 22)),
-      h('span', { style: 'min-width:0;flex:1' }, h('div', { class: 't1' }, 'You’re up to date'), h('div', { class: 't2', style: 'color:var(--text-2)' }, j.nextTimed.title + ' opens ' + relDay(j.nextTimed.opens, true))),
-      h('span', { class: 'go', style: 'background:var(--surface-2)' }, ic('arrow-right', 18)));
+    next = h('div', { class: 'jnext quiet' }, h('span', { class: 'nico' }, ic('check', 22)),
+      h('span', { style: 'min-width:0;flex:1' }, h('div', { class: 't1' }, 'You’re up to date'), h('div', { class: 't2' }, j.nextTimed.title + ' opens ' + relDay(j.nextTimed.opens, true))));
   }
-  const dots = h('div', { class: 'jdots' }); for (let i = 0; i < 12; i++) dots.append(h('i', { class: i < pct ? 'on' : '' }));
-  return h('div', { class: 'jcard', onClick: () => actions.goTab('care', true) },
-    h('div', { class: 'top' }, cycleRing(62, { small: true, animate: false }),
+  return h('div', { class: 'hero', onClick: () => actions.goTab('care', true) },
+    h('div', { class: 'top' }, cycleRing(112, { onSun: true, animate: false }),
       h('div', { style: 'flex:1;min-width:0' },
-        h('div', { class: 'k' }, 'Your journey'),
-        h('h3', null, 'Cycle ' + ci.cycle + (ci.on ? ', treatment day ' + ci.day : ', rest week')),
-        h('div', { class: 'meta' }, j.done + ' of ' + j.total + ' steps done in this cycle')),
-      ic('caret-right', 18, 'muted')),
-    dots, next || null);
-}
-
-/* ---------- My Care journey ---------- */
-export function journeyBlock(animate) {
-  const j = computeJourney(); const ci = j.ci; const s = store.get(); const cd = callDate();
-  const callDone = s.call.done || (cd && cd < sod(now()));
-  const left = ci.on ? 21 - ci.day : 0;
-  const hero = h('div', { class: 'hero' },
-    h('div', { class: 'top' }, cycleRing(128, { onSun: true, animate: !!animate }),
-      h('div', { style: 'flex:1;min-width:0' },
-        h('div', { class: 'k' }, 'Cycle ' + ci.cycle),
+        h('div', { class: 'k' }, 'Cycle ' + ci.cycle + ' · ' + j.done + ' of ' + j.total + ' steps'),
         h('h3', null, ci.on ? (left === 0 ? 'Last treatment day' : left + ' treatment ' + (left === 1 ? 'day' : 'days') + ' to go') : 'Rest week'),
         h('div', { class: 'facts2' },
           h('div', null, ic('moon', 15), ci.on ? 'Rest week: ' + fmtDay(ci.restStart) : 'Cycle ' + (ci.cycle + 1) + ': ' + fmtDay(ci.nextCycle)),
-          h('div', null, ic('phone', 15), '2 calls with Sofia')))),
-    h('div', { class: 'legend' }, h('span', null, h('i', { style: 'background:#e09a00' }), 'Treatment days'), h('span', null, h('i', { style: 'background:#9fc0e6' }), 'Rest days'), h('span', null, h('i', { style: 'background:#2a2a2a' }), 'Today')),
-    !callDone && cd ? h('button', { class: 'callrow', onClick: () => openCallDetails() },
-      h('span', { class: 'avatar' }, 'S'),
-      h('span', { style: 'flex:1;min-width:0' }, h('div', { class: 't1' }, 'Welcome call with Sofia'), h('div', { class: 't2' }, relDay(cd) + ' at ' + s.call.time + ' · tap to prepare or move')),
-      ic('caret-right', 18, 'muted')) : null);
+          h('div', null, ic('phone', 15), callOpen ? 'Call with Sofia ' + relDay(cd, true) + ', ' + s.call.time : '2 calls with Sofia this cycle')))),
+    h('div', { class: 'legend' }, h('span', null, h('i', { style: 'background:#e09a00' }), 'Done'), h('span', null, h('i', { style: 'background:#f4c26b' }), 'Treatment days'), h('span', null, h('i', { style: 'background:#9fc0e6' }), 'Rest days'), h('span', null, h('i', { style: 'background:#2a2a2a' }), 'Today')),
+    next);
+}
 
-  const wrap = h('div', null, hero);
+/* ---------- My Care journey ---------- */
+// Two calmer layouts, switchable in the prototype controls while the look is being decided.
+function calmHead(ph, cls) {
+  return h('div', { class: cls }, h('div', null, h('span', { class: 'k' }, ph.k), h('b', null, ph.title)), h('span', { class: 'cnt' }, ph.preview ? 'Later' : ph.done + ' of ' + ph.total));
+}
+function timelineBlock(j) {
+  return j.phases.map((ph) => h('section', { class: 'tl' }, calmHead(ph, 'tl-h'),
+    h('div', { class: 'tl-rows' }, ph.steps.map((st) => {
+      const cur = st.state === 'current';
+      return h('button', { class: 'tl-row ' + st.state + (st.type === 'call' ? ' call' : '') + (st.type === 'milestone' ? ' ms' : ''), 'data-cur': cur ? '1' : null, onClick: () => openStep(st.id) },
+        h('span', { class: 'tl-m' }, st.state === 'done' ? ic('check', 12) : st.type === 'call' && st.state === 'call' ? ic('phone:fill', 11) : null),
+        h('span', { class: 'tl-t' }, h('b', null, st.title), h('small', null, cur ? 'Next · ' + st.sub : st.sub)),
+        cur ? h('span', { class: 'tl-go' }, 'Start') : null);
+    })),
+    ph.preview ? h('div', { class: 'future-note' }, ic('info', 18), h('span', null, ph.note)) : null));
+}
+function cardsBlock(j) {
+  return j.phases.map((ph) => h('section', { class: 'ck' }, calmHead(ph, 'ck-h'),
+    ph.preview ? null : h('div', { class: 'ck-bar' }, h('i', { style: 'width:' + Math.round((ph.done / ph.total) * 100) + '%' })),
+    h('div', { class: 'ck-rows' }, ph.steps.map((st) => {
+      const cur = st.state === 'current';
+      return h('button', { class: 'ck-row ' + st.state, 'data-cur': cur ? '1' : null, onClick: () => openStep(st.id) },
+        h('span', { class: 'ck-box' }, st.state === 'done' ? ic('check', 14) : st.type === 'call' ? ic('phone', 14) : st.type === 'milestone' ? ic('flag-banner', 14) : st.state === 'timed' ? ic('clock', 14) : st.state === 'locked' ? ic('lock-simple', 13) : null),
+        h('span', { class: 'ck-t' }, h('b', null, st.title), h('small', null, cur ? 'Next · ' + st.sub : st.sub)),
+        ic('caret-right', 16, 'chev'));
+    })),
+    ph.preview ? h('div', { class: 'ck-note' }, ph.note) : null));
+}
+export function journeyBlock() {
+  const j = computeJourney(); const style = store.get().journeyStyle || 'path';
+  const wrap = h('div', null, cycleCard());
+  if (style !== 'path') { add(wrap, [style === 'timeline' ? timelineBlock(j) : cardsBlock(j)]); justDone = null; return wrap; }
   j.phases.forEach((ph) => {
     const complete = ph.done === ph.total;
     const head = h('div', { class: 'phase-h', 'data-tone': complete ? 'done' : ph.tone },
@@ -188,7 +199,7 @@ export function drawTrails(root) {
   });
 }
 export function scrollToCurrent(scroller, smooth) {
-  const n = scroller.querySelector('.node.current') || scroller.querySelector('.node.call:not(.done)');
+  const n = scroller.querySelector('.node.current, [data-cur]') || scroller.querySelector('.node.call:not(.done)');
   if (!n) return;
   const sr = scroller.getBoundingClientRect(); const nr = n.getBoundingClientRect();
   const top = scroller.scrollTop + (nr.top - sr.top) - sr.height * 0.42;
@@ -208,7 +219,7 @@ export function openStep(id) {
   const st = findStep(id); if (!st) return;
   if (st.id === 'call1' && st.state !== 'done') return openCallDetails();
   const isCall = st.type === 'call';
-  const nodeCls = 'node ' + (st.state === 'done' ? 'done' : st.state === 'current' ? 'current' : st.state === 'timed' ? 'timed' : st.state === 'open' ? 'open' : '') + (isCall && st.state !== 'locked' && st.state !== 'timed' ? ' call' : '') + (st.type === 'milestone' ? ' milestone' : '');
+  const nodeCls = 'node ' + (st.state === 'done' ? 'done' : st.state === 'current' ? 'current' : st.state === 'timed' ? 'timed' : st.state === 'open' ? 'open' : '') + (isCall && st.state !== 'locked' && st.state !== 'timed' ? ' call' : '') + (st.type === 'milestone' ? ' milestone' : '') + (store.get().journeyStyle !== 'path' ? ' flat' : '');
   openSheet((api) => {
     let cta = null; let lock = null;
     const go = (fn) => async () => { await api.close(); fn(); };

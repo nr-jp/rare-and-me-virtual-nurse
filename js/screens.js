@@ -4,7 +4,7 @@ import {
   fill, h, add, ic, store, fresh, now, sod, addDays, iso, fromIso, diffDays, fmtDay, fmtLong, fmtDate, wdShort, moShort, relDay, greeting, lineStatus, cycleInfo, doseStats,
   openSheet, sheetHead, actionSheet, openView, closeView, closeAllViews, closeSheets, toast, celebrate, actions, sol, page, row, refreshAll, nextWeekday,
 } from './core.js';
-import { homeJourneyCard, journeyBlock, scrollToCurrent, callDate, computeJourney, openCallDetails, openReminders, drawTrails } from './journey.js';
+import { cycleCard, journeyBlock, scrollToCurrent, callDate, computeJourney, openCallDetails, openReminders, drawTrails } from './journey.js';
 import { openUnlock, openJoin, openMeet, activate, activationProgress, callNurse } from './flows.js';
 
 /* ---------- Shared bits ---------- */
@@ -51,7 +51,7 @@ function setupCard(compact) {
 function readyCard() {
   return h('div', { class: 'hcard', style: 'border-radius:22px;background:linear-gradient(140deg,#fff,#fff7df);box-shadow:0 10px 30px rgba(160,120,20,.14);border-color:#fff' },
     h('div', { class: 'head' }, sol(52, 'speaking'), h('div', null, h('div', { class: 'kicker' }, MED.brand + ' support'), h('h3', null, 'Your nurse support is ready'))),
-    h('p', null, 'Meet Sol, your virtual nurse, and Sofia, your nurse. Then see your journey.'),
+    h('p', null, 'Meet Sol, your assistant, and Sofia, your nurse. Then see your journey.'),
     h('div', { class: 'btnstack' }, h('button', { class: 'btn primary block', onClick: () => openMeet() }, 'Meet Sol and Sofia')));
 }
 
@@ -87,10 +87,9 @@ export function homeTab() {
           h('p', null, 'Note any questions you have and what you’d like to discuss with Sofia.'),
           h('div', { class: 'btnrow', style: 'margin-top:14px;justify-content:flex-end' }, h('button', { class: 'btn secondary md', onClick: dismiss('prep' + s.call.dayIso) }, 'Not now'), h('button', { class: 'btn primary md', onClick: () => openCallDetails() }, 'Prepare for call'))));
       }
-      c.append(homeJourneyCard());
+      c.append(cycleCard());
       c.append(h('div', null,
         h('button', { class: 'ask', onClick: () => actions.openChat({ focus: true }) }, sol(34), h('span', { class: 'ph' }, 'Ask Sol about your treatment'), h('span', { class: 'send' }, ic('arrow-up', 18))),
-        h('div', { class: 'chips' }, ['I missed a dose', 'I have a side effect', 'When is my call?', 'How am I doing?'].map((t) => h('button', { class: 'chip', onClick: () => actions.openChat({ text: t }) }, t))),
         h('button', { class: 'nurse-strip', onClick: () => callNurse() }, h('span', { class: 'avatar' }, 'S', h('i', { class: 'on' + (lineStatus().open ? '' : ' off') })),
           h('span', { style: 'flex:1;min-width:0' }, h('div', { class: 't1' }, 'Sofia, your nurse'), h('div', { class: 't2' }, cd && !s.call.done && dd >= 0 ? 'Welcome call ' + relDay(cd, true) + ' at ' + s.call.time : lineStatus().label)),
           h('span', { class: 'callbtn' }, ic('phone:fill', 18)))));
@@ -167,9 +166,12 @@ export function openSupport() {
         h('div', { class: 'hstack', style: 'gap:12px' }, h('span', { class: 'avatar' }, 'S', h('i', { class: 'on' + (ls.open ? '' : ' off') })), h('div', { style: 'flex:1' }, h('div', { style: 'font-weight:600' }, 'Nurse line'), h('div', { class: 'muted small' }, 'Open ' + MED.hours + '.'))),
         h('button', { class: 'btn primary md', style: 'margin-top:12px', onClick: () => callNurse() }, ic('phone', 16), 'Call your nurse')));
       out.append(h('div', { class: 'card lg mt12', style: 'padding:16px' },
-        h('div', { class: 'hstack', style: 'gap:12px' }, sol(40), h('div', { style: 'flex:1' }, h('div', { style: 'font-weight:600' }, 'Sol, your virtual nurse ', h('span', { class: 'badge ai' }, 'AI')), h('div', { class: 'muted small' }, 'Here day and night, in the app.'))),
+        h('div', { class: 'hstack', style: 'gap:12px' }, sol(40), h('div', { style: 'flex:1' }, h('div', { style: 'font-weight:600' }, 'Sol, your assistant ', h('span', { class: 'badge ai' }, 'AI')), h('div', { class: 'muted small' }, 'Here day and night, in the app.'))),
         h('div', { class: 'btnrow', style: 'margin-top:12px' }, h('button', { class: 'btn primary md', onClick: () => actions.openChat({ focus: true }) }, 'Ask Sol'), h('button', { class: 'btn secondary md', onClick: async () => { await closeView(view); actions.goTab('care', true); } }, 'See my journey'))));
     }
+    const cd = callDate(); const callOpen = s.stage === 'active' && cd && !s.call.done && cd >= sod(now());
+    out.append(h('div', { class: 'section-h' }, h('span', null, 'Appointments')),
+      h('div', { class: 'list' }, row({ tile: { icon: 'calendar-dots', cls: 'sky' }, t1: 'Manage appointments', t2: callOpen ? 'Next: welcome call ' + relDay(cd, true) + ', ' + s.call.time : 'Calls and check-ups in one place', onClick: () => openAppointments() })));
     out.append(h('div', { class: 'section-h' }, h('span', null, 'Treatment')),
       h('div', { class: 'list' }, h('div', { class: 'kv' }, h('span', null, 'Start date'), h('span', null, fmtDate(st))), h('div', { class: 'kv' }, h('span', null, 'Cycle'), h('span', null, '21 days on, 7 days off')), h('div', { class: 'kv' }, h('span', null, 'Dose times'), h('span', null, s.reminders.am + ' and ' + s.reminders.pm))));
     out.append(h('div', { class: 'list mt16' },
@@ -356,7 +358,12 @@ export function settingsTab(onPreset) {
         h('div', { class: 'grid' },
           pb('+1 day', 'Call reminders', () => onPreset('time', 1)), pb('+3 days', 'Week 1 check-in opens', () => onPreset('time', 3)),
           pb('+1 week', 'More of cycle 1', () => onPreset('time', 7)), pb('Back to today', 'Reset the clock', () => onPreset('time', 0))),
-        h('div', { class: 'grid' }, pb('Clear chat', 'Empty the thread with Sol', () => { store.set({ chat: [], checkin: null }); toast('Chat cleared', null); }))),
+        h('div', { class: 'grid' }, pb('Clear chats', 'Empty the history with Sol', () => { store.set({ chats: [], chatId: null, checkin: null }); toast('Chats cleared', null); })),
+        h('p', { style: 'margin-top:14px;font-weight:600;color:#4b3b8f' }, 'Journey style'),
+        h('div', { class: 'grid' },
+          pb('Original', 'Winding path', () => store.set({ journeyStyle: 'path' }), s.journeyStyle === 'path'),
+          pb('Timeline', 'Calm, one line', () => store.set({ journeyStyle: 'timeline' }), s.journeyStyle === 'timeline'),
+          pb('Checklist', 'Cards by phase', () => store.set({ journeyStyle: 'cards' }), s.journeyStyle === 'cards'))),
       h('p', { class: 'tiny center mt20' }, 'Concept prototype. Illustrative content, not for patient use.')));
     scroll.scrollTop = top;
   }
@@ -365,7 +372,7 @@ export function settingsTab(onPreset) {
 export function openAboutProto() {
   openSheet((api) => [sheetHead('About this prototype', api), h('div', { class: 'sh-body' },
     h('div', { class: 'center' }, sol(64)),
-    h('p', { class: 'lede' }, 'A concept prototype of the virtual nurse inside Rare & Me: the journey, the chat with Sol and the route to a human nurse.'),
+    h('p', { class: 'lede' }, 'A concept prototype of Sol, the assistant inside Rare & Me: the journey, the chat and the route to a human nurse.'),
     h('div', { class: 'list mt16' },
       h('div', { class: 'how' }, ic('warning', 22, 'lead'), h('div', null, h('div', { class: 't1' }, 'Not for patient use'), h('div', { class: 't2' }, 'Content is illustrative and has not been through medical, legal or regulatory review. It is not medical advice.'))),
       h('div', { class: 'how' }, ic('chats', 22, 'lead'), h('div', null, h('div', { class: 't1' }, 'Sol is scripted'), h('div', { class: 't2' }, 'Replies come from a fixed set of topics and rules that run on your device. No AI model is called and nothing leaves your phone.'))),

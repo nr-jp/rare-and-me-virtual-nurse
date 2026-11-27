@@ -49,7 +49,7 @@ function openUnlocked() {
       h('div', { class: 'incl' }, h('div', { class: 'lbl' }, 'What’s included'),
         h('div', { class: 'list' },
           h('div', { class: 'how' }, ic('lightbulb', 22, 'lead'), h('div', null, h('div', { class: 't1' }, 'Learn about your treatment'), h('div', { class: 't2' }, 'Guidance and tips about your medication.'))),
-          h('div', { class: 'how' }, ic('phone', 22, 'lead'), h('div', null, h('div', { class: 't1' }, 'Support program'), h('div', { class: 't2' }, 'Join the support program to talk to a nurse by phone, and get a virtual nurse in the app.')))))),
+          h('div', { class: 'how' }, ic('phone', 22, 'lead'), h('div', null, h('div', { class: 't1' }, 'Support program'), h('div', { class: 't2' }, 'Join the support program to talk to a nurse by phone, and get Sol, an AI assistant, in the app.')))))),
     h('div', { class: 'sh-foot' }, h('button', { class: 'btn primary block', onClick: async () => { await api.close(); actions.openSupport(); } }, 'View my support')),
   ]);
 }
@@ -66,7 +66,7 @@ export function openJoin() {
         h('div', { class: 'list' },
           h('div', { class: 'how' }, ic('phone', 22, 'lead'), h('div', null, h('div', { class: 't1' }, 'Talk to a nurse'), h('div', { class: 't2' }, 'Call when you want to talk. Your nurse may call you too.'))),
           h('div', { class: 'how' }, ic('chats', 22, 'lead'), h('div', null, h('div', { class: 't1' }, 'What a nurse can help with'), h('div', { class: 't2' }, 'Taking your medication, side effects and practical questions. Nurses don’t diagnose or change your dose.'))),
-          h('div', { class: 'how' }, ic('sun', 22, 'lead'), h('div', null, h('div', { class: 't1' }, 'A virtual nurse in between'), h('div', { class: 't2' }, 'Once you have joined, Sol answers questions in the app day and night and shows you what comes next.'))),
+          h('div', { class: 'how' }, ic('sun', 22, 'lead'), h('div', null, h('div', { class: 't1' }, 'An assistant in between'), h('div', { class: 't2' }, 'Once you have joined, Sol answers questions in the app day and night and shows you what comes next.'))),
           h('div', { class: 'how' }, ic('user-focus', 22, 'lead'), h('div', null, h('div', { class: 't1' }, 'Join in one call'), h('div', { class: 't2' }, 'There is nothing to fill in first. You are set up while you talk.')))))),
     h('div', { class: 'sh-foot' },
       h('div', { class: 'hours' }, h('i', { class: 'live' + (ls.open ? '' : ' off') }), 'Open ' + MED.hours),
@@ -160,7 +160,7 @@ export function openMeet() {
   };
   const panes = [
     mk(h('div', { class: 'rise-in' }, sol(164, 'idle')), 'Your nurse support is ready', 'You’re registered, ' + s.name + '. From here you have two people in your corner, and a clear view of what happens next.', null, 'Meet them', () => go(1)),
-    mk(sol(150, 'speaking'), 'This is Sol', 'Your virtual nurse. Here day and night, in the app.',
+    mk(sol(150, 'speaking'), 'This is Sol', 'Your assistant. Here day and night, in the app.',
       h('div', { class: 'facts' },
         h('div', { class: 'fact' }, ic('check-circle:fill', 20), h('div', null, h('b', null, 'Answers and guides'), h('span', { class: 'd' }, 'Uses approved information about Ezmekly and what you log here.'))),
         h('div', { class: 'fact' }, ic('warning', 20), h('div', null, h('b', null, 'An AI, not a nurse or doctor'), h('span', { class: 'd' }, 'No medical advice, no diagnosis, no dose changes. If you mention a side effect, it is reported to the safety team.')))),
@@ -189,7 +189,7 @@ export function callNurse() {
         h('h2', { class: 'mt12' }, 'Sofia and the nurse team'), h('p', { class: 'lede', style: 'margin-top:4px' }, ls.label)),
       h('div', { class: 'list mt20' },
         callOpen ? h('button', { class: 'row tiled', onClick: async () => { await api.close(); openCallDetails(); } }, h('span', { class: 'tile sky' }, ic('calendar-check', 22)), h('span', { class: 'grow' }, h('div', { class: 't1' }, 'Welcome call ' + relDay(cd, true) + ', ' + s.call.time), h('div', { class: 't2' }, 'Sofia calls you. Tap to prepare or move it.')), ic('caret-right', 18, 'chev')) : null,
-        h('button', { class: 'row tiled', onClick: async () => { await api.close(); actions.openChat({ focus: true }); } }, h('span', { class: 'tile' }, sol(26)), h('span', { class: 'grow' }, h('div', { class: 't1' }, 'Rather type? Ask Sol'), h('div', { class: 't2' }, 'Your virtual nurse, here day and night.')), ic('caret-right', 18, 'chev'))),
+        h('button', { class: 'row tiled', onClick: async () => { await api.close(); actions.openChat({ focus: true }); } }, h('span', { class: 'tile' }, sol(26)), h('span', { class: 'grow' }, h('div', { class: 't1' }, 'Rather type? Ask Sol'), h('div', { class: 't2' }, 'Your assistant, here day and night.')), ic('caret-right', 18, 'chev'))),
       h('p', { class: 'small muted mt16 center' }, 'In an emergency, call your local emergency number.')),
     h('div', { class: 'sh-foot' }, h('button', { class: 'btn sky block', style: 'height:52px', onClick: async () => { await api.close(); startCall({}); } }, ic('phone:fill', 18), 'Call ' + MED.phone)),
   ]);

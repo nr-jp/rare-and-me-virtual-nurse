@@ -17,10 +17,9 @@ const TABS = [['home', 'Home', 'house'], ['care', 'My Care', 'heartbeat'], ['ins
 const views = { home: homeTab(), care: careTab(), insights: insightsTab(), learning: learningTab(), settings: settingsTab(preset) };
 let current = 'home';
 const tabbar = h('nav', { class: 'tabbar' });
-const fab = h('button', { class: 'fab', 'aria-label': 'Quick actions' });
+const fab = h('button', { class: 'fab', 'aria-label': 'Quick actions' }, ic('plus', 26));
 const dock = h('div', { class: 'dock hide' },
-  h('button', { class: 'ask-b', onClick: () => actions.openChat({ focus: true }) }, sol(40, 'idle', 'dark'), h('span', null, 'Ask Sol', h('small', null, 'Virtual nurse · AI'))),
-  h('button', { class: 'call-b', onClick: () => actions.callNurse() }, ic('phone:fill', 20), 'Nurse'));
+  h('button', { class: 'ask-b', onClick: () => actions.openChat({ focus: true }) }, sol(44, 'idle', 'dark'), h('span', { class: 'grow' }, 'Ask Sol', h('small', null, 'AI, answers from your materials')), ic('arrow-right', 18)));
 Object.values(views).forEach((v) => { lTabs.append(v.el); registerTabView(v); });
 lTabs.append(dock, fab, tabbar);
 
@@ -29,22 +28,22 @@ function paintTabbar() {
   fill(tabbar, ...TABS.map(([id, label, icon]) => h('button', { class: 'tab' + (id === current ? ' on' : ''), 'aria-label': label, onClick: () => goTab(id) },
     ic(id === current ? icon + ':duo' : icon, 24), label, id === 'care' && current !== 'care' && j && j.current ? h('i', { class: 'dot' }) : null)));
 }
-let fabMode = null;
 function syncChrome() {
   const s = store.get(); const live = s.stage === 'active' && s.metSol;
-  const mode = live ? 'sol' : 'plus';
-  if (mode !== fabMode) { fabMode = mode; fab.className = 'fab' + (live ? ' is-sol' : ''); fill(fab, live ? sol(40, 'idle', 'dark') : ic('plus', 26)); fab.setAttribute('aria-label', live ? 'Ask Sol' : 'Quick actions'); }
   const showDock = live && current === 'care';
   dock.classList.toggle('hide', !showDock);
   fab.classList.toggle('hide', showDock || current === 'settings');
   paintTabbar();
 }
 fab.addEventListener('click', () => {
-  const s = store.get(); hideTip();
-  if (s.stage === 'active' && s.metSol) return actions.openChat({ focus: true });
-  openSheet((api) => [sheetHead('', api), h('div', { class: 'sh-body', style: 'padding-bottom:calc(18px + var(--safe-b))' }, h('div', { class: 'list' },
-    row({ tile: { icon: 'lightning' }, t1: 'Log symptoms', onClick: async () => { await api.close(); openSymptoms(); }, chev: false }),
-    row({ tile: { icon: 'first-aid-kit' }, t1: 'Log medication', onClick: async () => { await api.close(); openSchedule(); }, chev: false })))]);
+  const s = store.get(); hideTip(); const live = s.stage === 'active' && s.metSol;
+  // Sol sits at the top of the quick actions, set apart from the logging shortcuts.
+  openSheet((api) => [sheetHead('', api), h('div', { class: 'sh-body', style: 'padding-bottom:calc(18px + var(--safe-b))' },
+    live ? h('button', { class: 'solrow', onClick: async () => { await api.close(); actions.openChat({ focus: true }); } }, sol(44, 'idle'),
+      h('span', { class: 'grow' }, h('div', { class: 't1' }, 'Ask Sol ', h('span', { class: 'badge ai' }, 'AI')), h('div', { class: 't2' }, 'Your assistant. Answers from your materials.')), h('span', { class: 'go' }, ic('arrow-right', 18))) : null,
+    h('div', { class: 'list' + (live ? ' mt12' : '') },
+      row({ tile: { icon: 'lightning' }, t1: 'Log symptoms', onClick: async () => { await api.close(); openSymptoms(); }, chev: false }),
+      row({ tile: { icon: 'first-aid-kit' }, t1: 'Log medication', onClick: async () => { await api.close(); openSchedule(); }, chev: false })))]);
 });
 export function goTab(id, focus) {
   current = id;
@@ -61,7 +60,7 @@ function hideTip() { if (tipEl) { const t = tipEl; tipEl = null; t.classList.add
 function maybeTip() {
   const s = store.get();
   if (tipEl || s.tipSeen || !(s.stage === 'active' && s.metSol) || current !== 'home') return;
-  tipEl = h('div', { class: 'fab-tip' }, 'Ask me anything, ' + s.name); lTabs.append(tipEl);
+  tipEl = h('div', { class: 'fab-tip' }, 'Tap + to ask Sol'); lTabs.append(tipEl);
   store.set({ tipSeen: true }); setTimeout(hideTip, 5200);
 }
 
@@ -81,7 +80,7 @@ async function preset(kind, n) {
   }
   const f = { ...fresh(), ...keep };
   if (kind === 'unlocked') f.stage = 'unlocked';
-  if (kind === 'active') { const t = sod(new Date()); f.stage = 'active'; f.enrolDay = iso(t); f.metSol = true; f.tipSeen = true; f.call = { ...f.call, dayIso: iso(nextWeekday(addDays(t, 2))) }; }
+  if (kind === 'active') { const t = sod(new Date()); f.stage = 'active'; f.enrolDay = iso(t); f.metSol = true; f.tipSeen = true; f.solAck = true; f.call = { ...f.call, dayIso: iso(nextWeekday(addDays(t, 2))) }; }
   store.set(f); goTab(kind === 'active' ? 'care' : 'home', kind === 'active');
   toast(kind === 'available' ? 'Started over' : kind === 'unlocked' ? 'Support unlocked' : 'Nurse support active', 'presentation-chart');
 }

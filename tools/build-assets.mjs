@@ -25,11 +25,12 @@ fast-forward arrow-counter-clockwise presentation-chart backspace thermometer ba
 graduation-cap cloud-sun calendar-heart seal-check drop-half toilet arrow-square-out hand-palm speaker-high copy flag
 map-trifold calendar-plus prohibit sign-out shield-warning user-focus chat-circle-dots chat-teardrop-text notepad
 phone-outgoing clock-countdown arrow-bend-up-left play fork-knife wine eyeglasses baby globe-hemisphere-west file-text
-receipt truck currency-circle-dollar hand-coins identification-card door-open`.split(/\s+/).filter(Boolean);
+receipt truck currency-circle-dollar hand-coins identification-card door-open
+sidebar-simple suitcase clock-counter-clockwise ambulance arrow-up-right`.split(/\s+/).filter(Boolean);
 
 const fill = `sun check-circle phone lock-simple lock star heart play seal-check x-circle moon lightning pill trophy medal sparkle
 phone-call phone-disconnect arrow-up bell microphone microphone-slash speaker-high backspace plus check caret-right
-warning info siren calendar-check clock chats-circle hand-heart book-open list-checks flag-banner eye user`.split(/\s+/).filter(Boolean);
+warning info siren calendar-check clock chats-circle hand-heart book-open list-checks flag-banner eye user clipboard-text`.split(/\s+/).filter(Boolean);
 
 const duotone = `house heartbeat chart-bar books user-circle`.split(/\s+/).filter(Boolean);
 
