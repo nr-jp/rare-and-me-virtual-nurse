@@ -1,0 +1,9 @@
+=== js/screens.js
+<<<<
+Original', 'Winding path', () => store.set({ journeyStyle: 'path' }), s.journeyStyle === 'path'),
+          pb('Timeline', 'Calm, one line', () => store.set({ journeyStyle: 'timeline' }), s.journeyStyle === 'timeline'),
+          pb('Checklist', 'Cards by phase', () => store.set({ journeyStyle: 'cards' }), s.journeyStyle === 'cards
+====
+Timeline', 'Default, one calm line', () => store.set({ journeyStyle: 'timeline' }), s.journeyStyle !== 'path'),
+          pb('Original path', 'Winding and more playful', () => store.set({ journeyStyle: 'path' }), s.journeyStyle === 'path
+>>>>

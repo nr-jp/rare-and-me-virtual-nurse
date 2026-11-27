@@ -1,0 +1,27 @@
+=== js/core.js
+<<<<
+ION = 5;
+expo
+====
+ION = 6;
+expo
+>>>>
+<<<<
+yle: 'path', met
+====
+yle: 'timeline', met
+>>>>
+<<<<
+{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === VERSION) return s; } cat
+====
+{
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if (s && s.v === 5) { s.v = VERSION; s.journeyStyle = 'timeline'; } // version 6 made the timeline the default. Keep the rest of the demo state.
+    if (s && s.v === VERSION) return s;
+  } cat
+>>>>
+<<<<
+calmer journey styles drop the
+====
+timeline has no
+>>>>
