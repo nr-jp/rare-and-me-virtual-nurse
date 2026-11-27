@@ -1,5 +1,5 @@
 // Offline support. Serves from cache first and refreshes in the background, so a new deploy shows up on the next open.
-const CACHE = 'ram-vn-v2';
+const CACHE = 'ram-vn-v3';
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest',
   'css/fonts.css', 'css/base.css', 'css/home.css', 'css/journey.css', 'css/chat.css',
   'js/app.js', 'js/core.js', 'js/icons.js', 'js/data.js', 'js/journey.js', 'js/chat.js', 'js/flows.js', 'js/screens.js',

@@ -361,9 +361,8 @@ export function settingsTab(onPreset) {
         h('div', { class: 'grid' }, pb('Clear chats', 'Empty the history with Sol', () => { store.set({ chats: [], chatId: null, checkin: null }); toast('Chats cleared', null); })),
         h('p', { style: 'margin-top:14px;font-weight:600;color:#4b3b8f' }, 'Journey style'),
         h('div', { class: 'grid' },
-          pb('Original', 'Winding path', () => store.set({ journeyStyle: 'path' }), s.journeyStyle === 'path'),
-          pb('Timeline', 'Calm, one line', () => store.set({ journeyStyle: 'timeline' }), s.journeyStyle === 'timeline'),
-          pb('Checklist', 'Cards by phase', () => store.set({ journeyStyle: 'cards' }), s.journeyStyle === 'cards'))),
+          pb('Timeline', 'Default, one calm line', () => store.set({ journeyStyle: 'timeline' }), s.journeyStyle !== 'path'),
+          pb('Original path', 'Winding and more playful', () => store.set({ journeyStyle: 'path' }), s.journeyStyle === 'path'))),
       h('p', { class: 'tiny center mt20' }, 'Concept prototype. Illustrative content, not for patient use.')));
     scroll.scrollTop = top;
   }

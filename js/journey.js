@@ -1,4 +1,4 @@
-// The journey: step logic, the cycle ring, the path, step sheets, the lesson player, reminders and call details.
+// The journey: step logic, the cycle ring, the timeline and the original path, step sheets, the lesson player, reminders and call details.
 import { PHASES, LESSONS, MED } from './data.js';
 import {
   fill, h, add, ic, store, cycleInfo, dayNDate, fromIso, now, sod, fmtDay, fmtLong, relDay, addDays, nextWeekday, iso, diffDays,
@@ -116,12 +116,10 @@ export function cycleCard() {
 }
 
 /* ---------- My Care journey ---------- */
-// Two calmer layouts, switchable in the prototype controls while the look is being decided.
-function calmHead(ph, cls) {
-  return h('div', { class: cls }, h('div', null, h('span', { class: 'k' }, ph.k), h('b', null, ph.title)), h('span', { class: 'cnt' }, ph.preview ? 'Later' : ph.done + ' of ' + ph.total));
-}
+// The timeline is the default. The original winding path stays available in the prototype controls.
 function timelineBlock(j) {
-  return j.phases.map((ph) => h('section', { class: 'tl' }, calmHead(ph, 'tl-h'),
+  return j.phases.map((ph) => h('section', { class: 'tl' },
+    h('div', { class: 'tl-h' }, h('div', null, h('span', { class: 'k' }, ph.k), h('b', null, ph.title)), h('span', { class: 'cnt' }, ph.preview ? 'Later' : ph.done + ' of ' + ph.total)),
     h('div', { class: 'tl-rows' }, ph.steps.map((st) => {
       const cur = st.state === 'current';
       return h('button', { class: 'tl-row ' + st.state + (st.type === 'call' ? ' call' : '') + (st.type === 'milestone' ? ' ms' : ''), 'data-cur': cur ? '1' : null, onClick: () => openStep(st.id) },
@@ -131,22 +129,10 @@ function timelineBlock(j) {
     })),
     ph.preview ? h('div', { class: 'future-note' }, ic('info', 18), h('span', null, ph.note)) : null));
 }
-function cardsBlock(j) {
-  return j.phases.map((ph) => h('section', { class: 'ck' }, calmHead(ph, 'ck-h'),
-    ph.preview ? null : h('div', { class: 'ck-bar' }, h('i', { style: 'width:' + Math.round((ph.done / ph.total) * 100) + '%' })),
-    h('div', { class: 'ck-rows' }, ph.steps.map((st) => {
-      const cur = st.state === 'current';
-      return h('button', { class: 'ck-row ' + st.state, 'data-cur': cur ? '1' : null, onClick: () => openStep(st.id) },
-        h('span', { class: 'ck-box' }, st.state === 'done' ? ic('check', 14) : st.type === 'call' ? ic('phone', 14) : st.type === 'milestone' ? ic('flag-banner', 14) : st.state === 'timed' ? ic('clock', 14) : st.state === 'locked' ? ic('lock-simple', 13) : null),
-        h('span', { class: 'ck-t' }, h('b', null, st.title), h('small', null, cur ? 'Next · ' + st.sub : st.sub)),
-        ic('caret-right', 16, 'chev'));
-    })),
-    ph.preview ? h('div', { class: 'ck-note' }, ph.note) : null));
-}
 export function journeyBlock() {
-  const j = computeJourney(); const style = store.get().journeyStyle || 'path';
+  const j = computeJourney(); const style = store.get().journeyStyle === 'path' ? 'path' : 'timeline';
   const wrap = h('div', null, cycleCard());
-  if (style !== 'path') { add(wrap, [style === 'timeline' ? timelineBlock(j) : cardsBlock(j)]); justDone = null; return wrap; }
+  if (style === 'timeline') { add(wrap, timelineBlock(j)); justDone = null; return wrap; }
   j.phases.forEach((ph) => {
     const complete = ph.done === ph.total;
     const head = h('div', { class: 'phase-h', 'data-tone': complete ? 'done' : ph.tone },

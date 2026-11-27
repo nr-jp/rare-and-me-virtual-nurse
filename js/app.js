@@ -67,7 +67,7 @@ function maybeTip() {
 /* ---------- Prototype presets and time travel ---------- */
 async function preset(kind, n) {
   await closeSheets(); await closeAllViews();
-  const keep = { presenter: store.get().presenter, installSeen: true };
+  const keep = { presenter: store.get().presenter, journeyStyle: store.get().journeyStyle, installSeen: true };
   if (kind === 'time') {
     const s = store.get(); const from = sod(now()); const offset = n === 0 ? 0 : (s.dayOffset || 0) + n; const doses = { ...s.doses };
     if (n > 0) { // the simulated patient keeps logging on the days we skip

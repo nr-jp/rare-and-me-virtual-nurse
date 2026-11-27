@@ -39,7 +39,7 @@ Settings has a dashed panel for demos:
 - **Presenter notes**: shows the rule behind each of Sol's answers inside the chat.
 - **Time travel**: move the date forward to trigger call reminders and check-ins.
 - **Clear chats**: empty the chat history with Sol.
-- **Journey style**: switch My Care between the original path, a timeline and a checklist while the look is being decided.
+- **Journey style**: My Care shows the journey as a timeline by default. Switch to the original winding path here to compare the two.
 
 ## Files
 
@@ -49,7 +49,7 @@ manifest.webmanifest    install details
 sw.js                   offline cache
 css/base.css            tokens, app shell, buttons, cards
 css/home.css            Home, Sol avatar, sheets, batch code, call screen, meeting Sol
-css/journey.css         My Care, the path, step sheets, lessons
+css/journey.css         My Care, the timeline and the path, step sheets, lessons
 css/chat.css            chat, other pages, toasts, splash
 css/fonts.css           Plus Jakarta Sans, embedded (generated)
 js/app.js               boot, tabs, Sol button, prototype presets, timed triggers
