@@ -1,0 +1,58 @@
+=== js/screens.js
+<<<<
+';
+import { homeJourneyCard, j
+====
+';
+import { cycleCard, j
+>>>>
+<<<<
+, your virtual nurse, and S
+====
+, your assistant, and S
+>>>>
+<<<<
+homeJourney
+====
+cycle
+>>>>
+<<<<
+: 'send' }, ic('arrow-up', 18))),
+        h('div', { class: 'chips' }, ['I missed a dose', 'I have a side effect', 'When is my call?', 'How am I doing?'].map((t) => h('button', { class: 'chip', onClick: () => actions.openChat({ text: t }) }, t))),
+        h
+====
+: 'send' }, ic('arrow-up', 18))),
+        h
+>>>>
+<<<<
+, your virtual nurse ', h('span'
+====
+, your assistant ', h('span'
+>>>>
+<<<<
+;
+    }
+    out.append(h('
+====
+;
+    }
+    const cd = callDate(); const callOpen = s.stage === 'active' && cd && !s.call.done && cd >= sod(now());
+    out.append(h('div', { class: 'section-h' }, h('span', null, 'Appointments')),
+      h('div', { class: 'list' }, row({ tile: { icon: 'calendar-dots', cls: 'sky' }, t1: 'Manage appointments', t2: callOpen ? 'Next: welcome call ' + relDay(cd, true) + ', ' + s.call.time : 'Calls and check-ups in one place', onClick: () => openAppointments() })));
+    out.append(h('
+>>>>
+<<<<
+', 'Empty the thread with Sol', () => { store.set({ chat: [], checkin: null }); toast('Chat cleared', null); }
+====
+s', 'Empty the history with Sol', () => { store.set({ chats: [], chatId: null, checkin: null }); toast('Chats cleared', null); })),
+        h('p', { style: 'margin-top:14px;font-weight:600;color:#4b3b8f' }, 'Journey style'),
+        h('div', { class: 'grid' },
+          pb('Original', 'Winding path', () => store.set({ journeyStyle: 'path' }), s.journeyStyle === 'path'),
+          pb('Timeline', 'Calm, one line', () => store.set({ journeyStyle: 'timeline' }), s.journeyStyle === 'timeline'),
+          pb('Checklist', 'Cards by phase', () => store.set({ journeyStyle: 'cards' }), s.journeyStyle === 'cards'
+>>>>
+<<<<
+the virtual nurse inside Rare & Me: the journey, the chat with Sol
+====
+Sol, the assistant inside Rare & Me: the journey, the chat
+>>>>
