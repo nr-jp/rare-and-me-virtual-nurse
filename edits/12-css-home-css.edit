@@ -1,0 +1,16 @@
+=== css/home.css
+<<<<
+-text-2); }
+
+====
+-text-2); }
+
+/* Sol in the quick actions sheet: one option, set apart from the logging shortcuts */
+.solrow { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; padding: 14px 14px 14px 12px; border-radius: 18px; background: linear-gradient(145deg, #fff8e2 0%, #ffe9ab 70%, #ffd98a 100%); box-shadow: 0 8px 22px rgba(190, 140, 20, .16); transition: transform .16s var(--ease); }
+.solrow:active { transform: scale(.985); }
+.solrow .grow { flex: 1; min-width: 0; }
+.solrow .t1 { font-weight: 700; font-size: 17px; line-height: 22px; display: flex; align-items: center; gap: 6px; }
+.solrow .t2 { font-size: 13.5px; line-height: 18px; color: #5a4a1c; margin-top: 1px; }
+.solrow .go { width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; flex: none; }
+
+>>>>

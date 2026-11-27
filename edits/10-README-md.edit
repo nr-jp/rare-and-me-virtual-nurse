@@ -1,0 +1,61 @@
+=== README.md
+<<<<
+virtual nurse.** One persistent chat, with a pinned disclaimer and no connectors. Topics are detected, and fixed rules decide what happens next: dose questions, side effects, vision changes, interactions and emergencies each have one set respon
+====
+assistant.** The chat follows Ivar's Assistant V1 design, in Rare & Me branding: a chats sidebar, the steps Sol checked, source pills, follow-up questions and a talk-to-a-person card. Replies are scripted. Dose questions, other medicines, vision changes and emergencies always get the talk-to-a-person card. In the app Sol is "your assistant" and is never called a virtual nur
+>>>>
+<<<<
+Ask Sol**. Try "I forgot my dose this morning", "I have a rash", "my vision is blurry
+====
++**, then **Ask Sol**. Tap a suggested question, open a source pill, then try "I forgot yesterday's dose. Can I take two today?
+>>>>
+<<<<
+**: empty the thread with Sol
+====
+s**: empty the chat history with Sol.
+- **Journey style**: switch My Care between the original path, a timeline and a checklist while the look is being decided
+>>>>
+<<<<
+chat surface and the rule-first reply engine
+====
+the chat (Ivar's Assistant V1 layout) and the scripted replies
+>>>>
+<<<<
+e script that makes the generated files
+```
+
+T
+====
+e scripts that make the generated files and apply staged edits
+```
+
+T
+>>>>
+<<<<
+version in `sw.js` (`ram-vn-v1` to `ram-vn-v2`) so phones pick up the new version
+====
+cache name in `sw.js` (for example `ram-vn-v2` to `ram-vn-v3`) so phones pick up the new version. A phone shows a new version the second time the app is opened after a deploy
+>>>>
+<<<<
+serve as they are.
+
+## Credits
+
+-
+====
+serve as they are.
+
+### How changes land
+
+Changes to this prototype are sent through a connector that can only write whole text files, one at a time. To keep the live site from sitting half-updated, a change set is staged in `edits/` and applied in one commit by the same GitHub Action:
+
+- `edits/files/<path>` holds whole files.
+- `edits/*.edit` holds search-and-replace blocks.
+- `edits/APPLY` lists the expected hash of every changed file. The Action applies the change set only if every result matches, then empties `edits/`.
+
+If you work in a normal clone you can ignore all of this and commit as usual.
+
+## Credits
+
+-
+>>>>
