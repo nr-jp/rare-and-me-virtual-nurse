@@ -1,11 +1,14 @@
 name: Build generated assets
 
-# Generates js/icons.js, css/fonts.css and the PNG app icons, then commits them to main.
-# Runs when the build script, its dependencies or the icon artwork change. It can also be run by hand.
+# Applies a change set staged in edits/ (if there is one), then generates js/icons.js, css/fonts.css and the
+# PNG app icons, and commits the result to main in one commit.
+# Runs when a change set is ready (edits/APPLY), or when the build scripts or the icon artwork change.
+# It can also be run by hand.
 on:
   push:
     branches: [main]
     paths:
+      - 'edits/APPLY'
       - 'tools/**'
       - 'icons/*.svg'
       - '.github/workflows/build-assets.yml'
@@ -13,6 +16,7 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 concurrency:
   group: build-assets
@@ -26,27 +30,37 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+      - name: Apply staged edits
+        run: node tools/apply-edits.mjs .
       - name: Install build tools
         working-directory: tools
-        run: npm install --no-audit --no-fund
+        run: npm install --no-audit --no-fund --no-package-lock
       - name: Generate assets
         run: node tools/build-assets.mjs .
-      - name: Commit generated files
+      - name: Commit the result
+        id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add css/fonts.css js/icons.js icons/*.png
+          git add -A
           if git diff --cached --quiet; then
             echo "Nothing to commit"
-          else
-            git commit -m "Build generated assets"
-            # Retry in case another commit lands on main between the pull and the push.
-            for attempt in 1 2 3 4 5; do
-              if git pull --rebase origin main && git push origin HEAD:main; then
-                exit 0
-              fi
-              sleep 5
-            done
-            echo "Could not push the generated files" >&2
-            exit 1
+            exit 0
           fi
+          git commit -m "Apply staged edits and build generated assets"
+          # Retry in case another commit lands on main between the pull and the push.
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "pushed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Could not push the result" >&2
+          exit 1
+      - name: Ask GitHub Pages to rebuild
+        if: steps.commit.outputs.pushed == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
